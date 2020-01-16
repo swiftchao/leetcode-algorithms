@@ -11,12 +11,12 @@
 /**
  *  * Note: The returned array must be malloced, assume caller calls free().
  *   */
-void printArray(int* returnSize) {
-  int* pi;
+void printArray(int* array, int arraySize) {
   printf("[");
-  for (pi = returnSize; pi < (returnSize+2); ++pi) {
-    printf("%d", *pi);
-    if (pi < (returnSize+1)) {
+  int i;
+  for (i = 0; i < arraySize; ++i) {
+    printf("%d", array[i]);
+    if (i < (arraySize - 1)) {
       printf(",");
     }
   }
@@ -28,7 +28,7 @@ int main(void) {
   int  nums[] = {2, 7, 11, 15};
   int target = 9;
   int* returnSize;
-  twoSum(nums, sizeof(nums) / sizeof(nums[0]), target, returnSize);
-  printArray(returnSize);
+  int* array = (int*)twoSum(nums, sizeof(nums) / sizeof(nums[0]), target, returnSize);
+  printArray(array, *returnSize);
   return 0;
 }

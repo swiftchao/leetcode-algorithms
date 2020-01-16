@@ -14,17 +14,20 @@
 int* twoSum(int* nums, int numsSize, int target, int* returnSize){
   int i;
   int j;
-  int *arr = (int*)malloc(2*sizeof(int));
+  int *array = (int*)malloc(2 * sizeof(int));
   for (i = 0; i < numsSize - 1; ++i) {
     for (j = i + 1; j < numsSize; ++j) {
       if (target == (nums[i] + nums[j])) {
-        arr[0] = i;
-        arr[1] = j;
-        returnSize[0] = i;
-        returnSize[1] = j;
-        return arr;
+        array[0] = i;
+        array[1] = j;
+        /*returnSize为返回的数组的元素的个数
+         * 找到两个数字和等于target时returnSize设置为2*/
+        *returnSize = 2;
+        return array;
       }
     }
   }
-  return NULL;
+  /*找不到两个数字和等于target时returnSize设置为0*/
+  *returnSize = 0;
+  return array;
 }
