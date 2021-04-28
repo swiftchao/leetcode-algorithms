@@ -1,8 +1,8 @@
 /*************************************************************************
-    > File Name: add-two-numbers.c
-    > Author: chaofei
-    > Mail: chaofeibest@163.com
-    > Created Time: 2020-01-16 16:19:30
+  > File Name: add-two-numbers.c
+  > Author: chaofei
+  > Mail: chaofeibest@163.com
+  > Created Time: 2020-01-16 16:19:30
  ************************************************************************/
 
 #include <stdlib.h>
@@ -16,81 +16,111 @@
  * struct ListNode *next;
  * };
  **/
-/*
+
 struct ListNode {
-  int val;
-  struct ListNode *next;
+    int val;
+    struct ListNode *next;
 };
-*/
 
 struct ListNode* init_list_node(int val) {
-  struct ListNode *node = (struct ListNode *)(malloc(sizeof(struct ListNode)));
-  node->val = val;
-  node->next = NULL;
-  return node;
+    struct ListNode *node = (struct ListNode *)(malloc(sizeof(struct ListNode)));
+    node->val = val;
+    node->next = NULL;
+    return node;
 }
 
 void print_list_node(struct ListNode *list_node) {
-  struct ListNode *node = list_node;
-  while (NULL != node) {
-    printf("%d", node->val);
-    if (NULL != node->next) {
-      printf("->");
+    struct ListNode *node = list_node;
+    while (NULL != node) {
+        printf("%d", node->val);
+        if (NULL != node->next) {
+            printf("->");
+        }
+        node = node->next;
     }
-    node = node->next;
-  }
-  printf("\n");
+    printf("\n");
 }
 
-int cal_num_length(int val) {
-  int i;
-  int sub_val_right;
-  for (i = 0; val > 0; ++i) {
-    sub_val_right = val % 10;
-    val = val / 10;
-  }
-  return i;
+struct ListNode* store_num_to_list_node(const char* arr_val) {
+    struct ListNode *header;
+    struct ListNode *node;
+    const char* p = arr_val;
+    header = init_list_node(*p - '0');
+    ++p;
+    node = header;
+    while ('\0' != *p) {
+        int p_val = *p - '0';
+        node->next = init_list_node(p_val);
+        /*node后移一个防止覆盖之前的值*/
+        node = node->next;
+        ++p;
+    }
+    return header;
 }
 
-/*使用long long类型防止数值过大传递值变化了比如9999999991*/
-struct ListNode* store_num_to_list_node(long long val) {
-  int i;
-  int sub_val_right = 0;
-  struct ListNode *header = NULL;
-  struct ListNode *node = NULL;
-  sub_val_right = val % 10;
-  val = val / 10;
-  header = init_list_node(sub_val_right);
-  node = header;
-  for (i = 0; val > 0; ++i) {
-    sub_val_right = val % 10;
-    /*串成链表*/
-    node->next = init_list_node(sub_val_right);
-    /*node后移一个防止覆盖之前的值*/
-    node = node->next;
-    val = val / 10;
-  }
-  return header;
+int cal_list_node_length(struct ListNode* lnode) {
+    struct ListNode* node = lnode;
+    int node_length = 0;
+    while (NULL != node) {
+        ++node_length; 
+        node = node->next;
+    }
+    return node_length;
 }
 
-long long covert_list_to_num(struct ListNode *list_node) {
-  struct ListNode *node = list_node;
-  /*注意total定义成double防止精度缺失*/
-  double total = 0;
-  int i;
-  for (i = 0; NULL != node; ++i) {
-    /*注意double转成int的精度缺失,比如300转成了299*/
-    total = total + (node->val * pow(10.0, i));
-    node = node->next;
-  }
-  //printf("%d\n", (int)total);
-  return (long long)total;
-}
 
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
-  long long total = 0;
-  long long a = covert_list_to_num(l1);
-  long long b = covert_list_to_num(l2);
-  total = a + b;
-  return store_num_to_list_node(total);
+    struct ListNode* p1 = l1;
+    struct ListNode* p2 = l2;
+    struct ListNode *header = init_list_node(0);
+    struct ListNode* node;
+    node = header;
+    int l1_len = cal_list_node_length(l1);
+    int l2_len = cal_list_node_length(l2);
+    int carry = 0;
+
+    while (NULL != p1 || NULL != p2) {
+        int sum = 0;
+        if (l1_len > l2_len) {
+            if (NULL != p1) {
+                sum += p1->val;
+                p1 = p1->next;
+            }
+            --l1_len;
+        } else if (l1_len < l2_len) {
+            if (NULL != p2) {
+                sum += p2->val;
+                p2 = p2->next;
+            }
+            --l2_len;
+        } else if (l1_len == l2_len) {
+            if (NULL != p1) {
+                sum += p1->val;
+                p1 = p1->next;
+            }
+            --l1_len;
+
+            if (NULL != p2) {
+                sum += p2->val;
+                p2 = p2->next;
+            }
+            --l2_len;
+        }
+        if (sum >= 10) {
+            sum = sum - 10;
+            carry = 1;
+        } else {
+            carry = 0;
+        }
+        if (carry != 0) {
+            node->next = init_list_node(carry);
+            node->val += carry;
+        }
+        
+        node->next = init_list_node(sum);
+       
+        node = node->next;
+    }
+    return header->next; 
 }
+
